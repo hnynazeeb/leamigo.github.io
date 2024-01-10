@@ -23,6 +23,7 @@
             color: white;
             border: none;
             cursor: pointer;
+            margin-top: 10px;
         }
         button:hover {
             background-color: #45a049;
@@ -43,125 +44,112 @@
 
 <h2>Admin Fare Configuration</h2>
 
-<form id="adminForm">
-    <label for="vehicleId">Vehicle ID:</label>
-    <input type="number" id="vehicleId" name="vehicleId" min="1" placeholder="Enter vehicle ID">
+<div id="vehicleConfigurations">
+    <!-- Vehicle configuration forms will be added here dynamically -->
+</div>
 
-    <label for="baseFare">Base Fare:</label>
-    <input type="number" id="baseFare" name="baseFare" min="0" placeholder="Enter base fare">
-
-    <label for="baseKm">Base Kilometers:</label>
-    <input type="number" id="baseKm" name="baseKm" min="0" placeholder="Enter base kilometers">
-
-    <label for="meetAndGreet">Meet and Greet:</label>
-    <select id="meetAndGreet" name="meetAndGreet">
-        <option value="no">No</option>
-        <option value="yes">Yes</option>
-    </select>
-
-    <div id="meetAndGreetCostContainer" style="display: none;">
-        <label for="meetAndGreetCost">Meet and Greet Cost:</label>
-        <input type="number" id="meetAndGreetCost" name="meetAndGreetCost" min="0" placeholder="Enter meet and greet cost">
-    </div>
-
-    <label for="stepValues">Step Values (comma-separated):</label>
-    <input type="text" id="stepValues" name="stepValues" placeholder="e.g., 10,20,40,80,200">
-
-    <label for="stepFactors">Step Factors (comma-separated):</label>
-    <input type="text" id="stepFactors" name="stepFactors" placeholder="e.g., 1.4,1.3,1.2,1.1,1.3">
-
-    <label for="currency">Currency:</label>
-    <input type="text" id="currency" name="currency" placeholder="Enter currency">
-
-    <button type="button" onclick="setFare()">Set Fare</button>
-</form>
-
-<table>
-    <tr>
-        <th>Vehicle ID</th>
-        <th>Vehicle Name</th>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>Saloon</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>MPV5</td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td>Minivan</td>
-    </tr>
-    <tr>
-        <td>4</td>
-        <td>Business Class</td>
-    </tr>
-    <tr>
-        <td>5</td>
-        <td>Business Van</td>
-    </tr>
-    <tr>
-        <td>6</td>
-        <td>Transporter</td>
-    </tr>
-    <tr>
-        <td>7</td>
-        <td>Minibus-13</td>
-    </tr>
-    <tr>
-        <td>8</td>
-        <td>Minibus-17</td>
-    </tr>
-</table>
+<button type="button" onclick="addVehicle()">Add New Vehicle</button>
 
 <script>
-    document.getElementById('meetAndGreet').addEventListener('change', function () {
-        const meetAndGreetCostContainer = document.getElementById('meetAndGreetCostContainer');
-        const meetAndGreetCostInput = document.getElementById('meetAndGreetCost');
+    let vehicleCount = 1;
 
-        if (this.value === 'yes') {
-            meetAndGreetCostContainer.style.display = 'block';
-        } else {
-            meetAndGreetCostContainer.style.display = 'none';
-            meetAndGreetCostInput.value = '';  // Reset the value when switching to "No"
-        }
-    });
+    function addVehicle() {
+        const vehicleConfigurationsDiv = document.getElementById('vehicleConfigurations');
 
-    function setFare() {
-        const vehicleId = document.getElementById('vehicleId').value;
-        const baseFare = document.getElementById('baseFare').value;
-        const baseKm = document.getElementById('baseKm').value;
-        const meetAndGreet = document.getElementById('meetAndGreet').value;
-        const meetAndGreetCost = document.getElementById('meetAndGreetCost').value;
-        const stepValues = document.getElementById('stepValues').value.split(',').map(Number);
-        const stepFactors = document.getElementById('stepFactors').value.split(',').map(Number);
-        const currency = document.getElementById('currency').value;
+        const vehicleForm = document.createElement('form');
+        vehicleForm.innerHTML = `
+            <h3>Vehicle Configuration ${vehicleCount}</h3>
+            <label for="vehicleId${vehicleCount}">Vehicle ID:</label>
+            <input type="number" id="vehicleId${vehicleCount}" name="vehicleId" min="1" placeholder="Enter vehicle ID">
+    
+            <label for="baseFare${vehicleCount}">Base Fare:</label>
+            <input type="number" id="baseFare${vehicleCount}" name="baseFare" min="0" placeholder="Enter base fare">
+    
+            <label for="baseKm${vehicleCount}">Base Kilometers:</label>
+            <input type="number" id="baseKm${vehicleCount}" name="baseKm" min="0" placeholder="Enter base kilometers">
+    
+            <label for="meetAndGreet${vehicleCount}">Meet and Greet:</label>
+            <select id="meetAndGreet${vehicleCount}" name="meetAndGreet">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+            </select>
+    
+            <div id="meetAndGreetCostContainer${vehicleCount}" style="display: none;">
+                <label for="meetAndGreetCost${vehicleCount}">Meet and Greet Cost:</label>
+                <input type="number" id="meetAndGreetCost${vehicleCount}" name="meetAndGreetCost" min="0" placeholder="Enter meet and greet cost">
+            </div>
+    
+            <label for="stepValues${vehicleCount}">Step Values (comma-separated):</label>
+            <input type="text" id="stepValues${vehicleCount}" name="stepValues" placeholder="e.g., 10,20,40,80,200">
+    
+            <label for="stepFactors${vehicleCount}">Step Factors (comma-separated):</label>
+            <input type="text" id="stepFactors${vehicleCount}" name="stepFactors" placeholder="e.g., 1.4,1.3,1.2,1.1,1.3">
+    
+            <label for="currency${vehicleCount}">Currency:</label>
+            <input type="text" id="currency${vehicleCount}" name="currency" placeholder="Enter currency">
+        `;
 
-        // Create the JSON object based on the entered values.
-        const fareConfig = {
-            "formula": {
-                "meet": {
-                    "cost": meetAndGreet === 'yes' ? parseFloat(meetAndGreetCost) : 0,
-                    "included": meetAndGreet === 'yes' ? 1 : 0
-                },
-                "step": {}
-            },
-            "base_km": parseInt(baseKm),
-            "base_fare": parseInt(baseFare),
-            "vehicle_id": parseInt(vehicleId)
-        };
+        vehicleConfigurationsDiv.appendChild(vehicleForm);
 
-        stepValues.forEach((value, index) => {
-            fareConfig.formula.step[value] = stepFactors[index];
+        document.getElementById(`meetAndGreet${vehicleCount}`).addEventListener('change', function () {
+            const meetAndGreetCostContainer = document.getElementById(`meetAndGreetCostContainer${vehicleCount}`);
+            const meetAndGreetCostInput = document.getElementById(`meetAndGreetCost${vehicleCount}`);
+
+            if (this.value === 'yes') {
+                meetAndGreetCostContainer.style.display = 'none';
+                meetAndGreetCostInput.value = '';  // Reset the value when switching to "Yes"
+            } else {
+                meetAndGreetCostContainer.style.display = 'block';
+            }
         });
 
-        // You can use the fareConfig object as needed (e.g., send it to the server, update an existing JSON, etc.).
-        console.log("Fare configuration set:", fareConfig);
-        alert("Fare configuration set!");  // You can replace this with your specific action.
+        vehicleCount++;
+    }
+
+    function setFare() {
+        // Logic to set fare for all vehicles can be implemented here.
+        // You can loop through the dynamically created forms and extract the values.
+        // For simplicity, I'm just logging the values for now.
+        const vehicleForms = document.querySelectorAll('form');
+        const fareConfigurations = [];
+
+        vehicleForms.forEach((form, index) => {
+            const vehicleId = form.querySelector(`#vehicleId${index + 1}`).value;
+            const baseFare = form.querySelector(`#baseFare${index + 1}`).value;
+            const baseKm = form.querySelector(`#baseKm${index + 1}`).value;
+            const meetAndGreet = form.querySelector(`#meetAndGreet${index + 1}`).value;
+            const meetAndGreetCost = meetAndGreet === 'yes' ? 0 : form.querySelector(`#meetAndGreetCost${index + 1}`).value;
+            const stepValues = form.querySelector(`#stepValues${index + 1}`).value.split(',').map(Number);
+            const stepFactors = form.querySelector(`#stepFactors${index + 1}`).value.split(',').map(Number);
+            const currency = form.querySelector(`#currency${index + 1}`).value;
+
+            const fareConfig = {
+                "formula": {
+                    "meet": {
+                        "cost": parseFloat(meetAndGreetCost),
+                        "included": meetAndGreet === 'yes' ? 1 : 0
+                    },
+                    "step": {}
+                },
+                "base_km": parseInt(baseKm),
+                "base_fare": parseInt(baseFare),
+                "vehicle_id": parseInt(vehicleId)
+            };
+
+            stepValues.forEach((value, stepIndex) => {
+                fareConfig.formula.step[value] = stepFactors[stepIndex];
+            });
+
+            fareConfigurations.push(fareConfig);
+        });
+
+        // You can use the fareConfigurations array as needed (e.g., send it to the server, update an existing JSON, etc.).
+        console.log("Fare configurations set:", fareConfigurations);
+        alert("Fare configurations set!");  // You can replace this with your specific action.
     }
 </script>
 
 </body>
 </html>
+
 
