@@ -27,6 +27,16 @@
         button:hover {
             background-color: #45a049;
         }
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 250px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -43,6 +53,17 @@
     <label for="baseKm">Base Kilometers:</label>
     <input type="number" id="baseKm" name="baseKm" min="0" placeholder="Enter base kilometers">
 
+    <label for="meetAndGreet">Meet and Greet:</label>
+    <select id="meetAndGreet" name="meetAndGreet">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+    </select>
+
+    <div id="meetAndGreetCostContainer" style="display: none;">
+        <label for="meetAndGreetCost">Meet and Greet Cost:</label>
+        <input type="number" id="meetAndGreetCost" name="meetAndGreetCost" min="0" placeholder="Enter meet and greet cost">
+    </div>
+
     <label for="stepValues">Step Values (comma-separated):</label>
     <input type="text" id="stepValues" name="stepValues" placeholder="e.g., 10,20,40,80,200">
 
@@ -55,11 +76,64 @@
     <button type="button" onclick="setFare()">Set Fare</button>
 </form>
 
+<table>
+    <tr>
+        <th>Vehicle ID</th>
+        <th>Vehicle Name</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Saloon</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>MPV5</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Minivan</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>Business Class</td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td>Business Van</td>
+    </tr>
+    <tr>
+        <td>6</td>
+        <td>Transporter</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>Minibus-13</td>
+    </tr>
+    <tr>
+        <td>8</td>
+        <td>Minibus-17</td>
+    </tr>
+</table>
+
 <script>
+    document.getElementById('meetAndGreet').addEventListener('change', function () {
+        const meetAndGreetCostContainer = document.getElementById('meetAndGreetCostContainer');
+        const meetAndGreetCostInput = document.getElementById('meetAndGreetCost');
+
+        if (this.value === 'yes') {
+            meetAndGreetCostContainer.style.display = 'block';
+        } else {
+            meetAndGreetCostContainer.style.display = 'none';
+            meetAndGreetCostInput.value = '';  // Reset the value when switching to "No"
+        }
+    });
+
     function setFare() {
         const vehicleId = document.getElementById('vehicleId').value;
         const baseFare = document.getElementById('baseFare').value;
         const baseKm = document.getElementById('baseKm').value;
+        const meetAndGreet = document.getElementById('meetAndGreet').value;
+        const meetAndGreetCost = document.getElementById('meetAndGreetCost').value;
         const stepValues = document.getElementById('stepValues').value.split(',').map(Number);
         const stepFactors = document.getElementById('stepFactors').value.split(',').map(Number);
         const currency = document.getElementById('currency').value;
@@ -68,8 +142,8 @@
         const fareConfig = {
             "formula": {
                 "meet": {
-                    "cost": 0,
-                    "included": 1
+                    "cost": meetAndGreet === 'yes' ? parseFloat(meetAndGreetCost) : 0,
+                    "included": meetAndGreet === 'yes' ? 1 : 0
                 },
                 "step": {}
             },
@@ -90,3 +164,4 @@
 
 </body>
 </html>
+
